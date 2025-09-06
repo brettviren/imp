@@ -1,0 +1,22 @@
+[project]
+name = "imp"
+version = "0.1.0"
+description = "There are many screenshot programs and this one is mine."
+readme = {file = "README.org", content-type = "text/org"}
+authors = [
+    { name = "Brett Viren", email = "brett.viren@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "click>=8.2.1",
+    "pillow>=11.3.0",
+    "requests>=2.32.5",
+    "sh>=2.2.2",
+]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+imp = "imp.__main__:cli"

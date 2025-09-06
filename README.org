@@ -1,0 +1,36 @@
+#+title: imp - an image pipeline with screenshot and upload nodes
+
+* What?
+
+The ~imp~ program implements an image acquisition, processing and dispatching
+pipeline command line program.
+
+* Install
+
+#+begin_example
+$ uv tool install git+https://github.com/brettviren/imp
+#+end_example
+
+* Usage
+
+General usage:
+
+#+begin_example
+$ imp [node [options] ...
+#+end_example
+
+* Pipeline nodes
+
+Each pipeline nodes is exposed as a commands.  To list available nodes run:
+
+#+begin_example
+$ imp
+#+end_example
+
+To get help on specific nodes:
+
+#+begin_example
+$ imp <node> --help
+#+end_example
+
+
