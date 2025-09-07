@@ -11,12 +11,31 @@ pipeline command line program.
 $ uv tool install git+https://github.com/brettviren/imp
 #+end_example
 
+To work fully, some external programs are required
+
+- slop :: for selecting windows or rectangles in a *grab*.  Note, *slop* works best with a compositor running (eg ~compton~).
+- xdotool :: for grabbing window titles and browser URL.
+- xclip :: for grabbing browser URL.
+- notify-send :: for sending desktop notification.
+- exiftool :: to set a "Comment" EXIF tag.
+
+
 * Usage
 
 General usage:
 
 #+begin_example
-$ imp [node [options] ...
+$ imp <node [options]> <node [options]> ...
+#+end_example
+
+For example, to grab a screen shot, save it, display it, upload it and generate a notification:
+
+#+begin_example
+$ imp grab \
+      save -f '/home/bv/ss/ss-{width}x{height}.png' \
+      display \
+      0x0 \
+      notify
 #+end_example
 
 * Pipeline nodes
