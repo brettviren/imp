@@ -18,38 +18,143 @@ To work fully, some external programs are required
 - xclip :: for grabbing browser URL.
 - notify-send :: for sending desktop notification.
 - exiftool :: to set a "Comment" EXIF tag.
-
+- rofi :: if the rofi command is used.
 
 * Usage
 
 General usage:
 
 #+begin_example
-$ imp <node [options]> <node [options]> ...
+$ imp 
+Usage: imp [OPTIONS] COMMAND [ARGS]...
+
+  An image processing pipeline.
+
+Options:
+  -c, --config TEXT  Configuration file in TOML syntax defining pipelines and
+                     nodes
+  --help             Show this message and exit.
+
+Commands:
+  config  Print default location of configuration file.
+  list    List pipelines defined in the configuration file
+  pipe    An image pipeline with screen shot or file sources.
+  rofi    Generate a rofi listing
+  run     Run a specific pipeline defined in config.
 #+end_example
 
-For example, to grab a screen shot, save it, display it, upload it and generate a notification:
+Gives a help listing.
+
+There are two ways to construct a pipeline: command line or configuration file.
+
+** Command line
+
+List available pipeline commands:
 
 #+begin_example
-$ imp grab \
-      save -f '/home/bv/ss/ss-{width}x{height}.png' \
-      display \
-      0x0 \
-      notify
+$ imp pipe
+...
+Commands:
+  0x0      Upload the image to 0x0.
+  browser  Opens the upload_url to a web browser, if it exists.
+  check    Check for key in info, if there notify with okay else with fail.
+  display  Opens all images in an image viewer.
+  grab     Generate an image by grabbing a screen shot and potentially...
+  notify   Send a notification consisting of a message formed by applying...
+  open     Loads one or multiple images for processing.
+  resize   Resizes an image by fitting it into the box without changing...
+  save     Saves images to files named according to filename pattern.
+  xclip    Apply Image.info to message and send it to the X11 selection.
 #+end_example
 
-* Pipeline nodes
-
-Each pipeline nodes is exposed as a commands.  To list available nodes run:
+For each command, there is specific help
 
 #+begin_example
-$ imp
+$ imp pipe <node> --help
 #+end_example
 
-To get help on specific nodes:
+The command line pipeline is simply a list of nodes and their options.
 
 #+begin_example
-$ imp <node> --help
+$ imp pipe grab save --filename foo.png
+$ imp pipe open --input foo.png \
+           notify --comment "{filename} {mode} {width}x{height}"
 #+end_example
 
+** Configuration file
 
+A configuration file can be specified in the default location or on the command line
+
+#+begin_example
+$ imp config
+/home/user/.config/imp/config.toml
+$ imp -c config.toml run <pipeline>
+#+end_example
+
+The ~imp run~ will execute the pipeline ~<pipeline>~ defined in the config file.
+
+There are two ways to define a pipeline: direct and via nodes.
+
+*** Direct pipelines
+
+A direct pipeline is simply the command line that would otherwise follow ~imp pipe~.
+
+#+begin_src toml
+[pipelines.direct]
+pipeline = "grab save --filename = 'ss-{year}-{month}-{day}-{hour}{minute}{second}.png"
+#+end_src
+
+*** Node pipelines
+
+The direct pipeline definition gets awkward when a family of pipelines are to be defined.  Defining them via "nodes" allows for some composition.
+
+#+begin_src toml
+[pipelines.select_png]
+nodes = "select png show tell"
+[pipelines.select_jpg]
+nodes = "select jpg show tell"
+[pipelines.screen_png]
+nodes = "screen png show tell"
+[pipelines.screen_jpg]
+nodes = "screen jpg show tell"
+
+[nodes.select]
+description = "Create image by select screenshot"
+node = "grab"
+method = "select"
+
+[nodes.png]
+description = "Save image in standard path as PNG file"
+node = "save"
+filename = "/home/bv/ss/{year}-{month}-{day}-{hour}{minute}{second}-{width}x{height}.png"
+
+[nodes.jpg]
+description = "Save image in standard path as JPEG file"
+node = "save"
+filename = "/home/bv/ss/{year}-{month}-{day}-{hour}{minute}{second}-{width}x{height}.png"
+
+[nodes.show]
+description = "Display the image"
+node = "display"
+
+[nodes.tell]
+description = "Display notification"
+node = "notify"
+comment = "{filename}<p>{width}x{height}<p>{mode}"
+#+end_src
+
+The ~node~ attribute is required, ~description~ is optional.  The rest are passed as command line options to the node command.  Command line options can also be provided or overridden on the command line.  For example, to override the "filename" pattern of the "png" node instance:
+
+#+begin_example
+$ imp run select_png png:filename=/tmp/grabbed-file.png
+#+end_example
+
+* Rofi
+
+~imp~ provides support for using pipelines defined in the configuration with ~rofi~.  Assuming the configuration file in its default location.
+
+#+begin_example
+$ imp rofi
+#+end_example
+
+This will show a rofi list of all pipelines.  Picking one will run it.

@@ -1,0 +1,77 @@
+# [pipelines.test]
+# nodes = "select check_grab clip"
+
+# [nodes.clip]
+# node = 'xclip'
+# message = 'Grab number {count}: "{filename}" title:"{grab_title}"'
+
+# [pipelines.direct]
+# pipeline = "grab notify"
+
+[nodes.check_grab]
+node = "check"
+info = "grab_url"
+okay = "Grabbed browser: {grab_url}"
+fail = "Grabbed non-browser"
+
+[pipelines.select_png]
+nodes = "select png show tell"
+[pipelines.select_jpg]
+nodes = "select jpg show tell"
+[pipelines.screen_png]
+nodes = "screen png show tell"
+[pipelines.screen_jpg]
+nodes = "screen jpg show tell"
+
+[pipelines.select_png_upload]
+nodes = "select png upload browse check"
+[pipelines.select_jpg_upload]
+nodes = "select jpg upload browse check"
+[pipelines.screen_png_upload]
+nodes = "screen png upload browse check"
+[pipelines.screen_jpg_upload]
+nodes = "screen jpg upload browse check"
+
+[nodes.browse]
+node = "browser"
+
+[nodes.check]
+node = "check"
+info = "upload_url"
+okay = "{upload_url}"
+fail = "Failed to upload"
+
+
+[nodes.png]
+description = "Save image in standard path as PNG file"
+node = "save"
+filename = "/home/bv/ss/{year}-{month}-{day}-{hour}{minute}{second}-{width}x{height}.png"
+
+[nodes.jpg]
+description = "Save image in standard path as JPEG file"
+node = "save"
+filename = "/home/bv/ss/{year}-{month}-{day}-{hour}{minute}{second}-{width}x{height}.png"
+
+[nodes.upload]
+description = "Upload image to 0x0"
+node = "0x0"
+
+[nodes.select]
+description = "Create image by select screenshot"
+node = "grab"
+method = "select"
+
+[nodes.screen]
+description = "Create image by full screenshot"
+node = "grab"
+method = "screen"
+
+[nodes.show]
+description = "Display the image"
+node = "display"
+
+[nodes.tell]
+description = "Display notification"
+node = "notify"
+comment = "{filename}<p>{width}x{height}<p>{mode}"
+
