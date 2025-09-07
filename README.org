@@ -104,6 +104,14 @@ A direct pipeline is simply the command line that would otherwise follow ~imp pi
 pipeline = "grab save --filename = 'ss-{year}-{month}-{day}-{hour}{minute}{second}.png"
 #+end_src
 
+That would be run like
+
+#+begin_example
+$ imp run direct
+#+end_example
+
+Direct pipelines have not available command line overrides.  These are possible with "node pipelines", described next.
+
 *** Node pipelines
 
 The direct pipeline definition gets awkward when a family of pipelines are to be defined.  Defining them via "nodes" allows for some composition.
