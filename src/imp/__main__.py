@@ -364,6 +364,7 @@ def pipe_xclip(images, message, selection):
     for count, image in enumerate(images):
         line = format_string(message, count=count, **image_params(image))
         lines.append(line)
+        yield image
     text = '\n'.join(lines)
     sh.xclip(['-in', '-selection', selection], _in=text)
         
