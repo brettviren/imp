@@ -284,9 +284,10 @@ def pipe_grab(method, info, comment):
         img = ImageGrab.grab()
     else:
         text = sh.slop(["--color=0.0,0.8,0.0,0.8",
-                        "--highlight",
+                        #"--highlight",
                         "--nodrag",
-                        "--shader", "crosshair"])
+                        "--shader", "crosshair"
+                        ])
         size,x,y = text.strip().split("+")
         w,h = size.split("x")
         x,y,w,h = map(int, (x,y,w,h))
