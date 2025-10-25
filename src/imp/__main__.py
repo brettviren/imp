@@ -724,11 +724,34 @@ def cmd_rofi(ctx):
     '''
     config = ctx.obj["config"]
 
-    options = '\n'.join(config["pipelines"])
-    options += '\n'
+    pipelines = config["pipelines"]
 
-    pipe = sh.rofi(["rofi", "-theme-str", "window {height: 450;}", "-dmenu", "-columns", "2", "-width", "-50", "-height", "100", "-p", "imp pipeline"], _in=options)
-    pipe = pipe.strip()
+    guess_font_height = 60
+    height = guess_font_height * len(pipelines)
+    width = 1000
+    window = "window {width: %d; height: %d;}"%(width,height)
+
+    lines = list()
+    pipes = list()
+    for pipeline, pipedata in pipelines.items():
+        pipes.append(pipeline)
+        lines.append(pipedata['nodes'] + '\n')
+    text = ''.join(lines)
+
+    try:
+        index = sh.rofi(["rofi","-dmenu",
+                         "-format", "i", # return index
+                         "-theme-str", window,
+                         "-p", "imp pipeline"],
+                        _in=text)
+    except Exception as err:
+        print(f'rofi aborted given input:\n{text}')
+        print(err)
+        return 1
+
+    index = int(index.strip())
+    pipe = pipes[index]
+    print(f'{index=} {pipe=}')
 
     args = list()
     if "config_filename" in ctx.obj:
